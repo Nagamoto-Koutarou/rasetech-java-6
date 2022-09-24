@@ -1,7 +1,10 @@
 package com.example.RestApiTraining;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,5 +30,17 @@ public class Controller {
         Customer.put(Customer.size()+1, param1);
 
         return Customer;
+    }
+
+    @PostMapping("/post2")
+    public ResponseEntity<String> create(@RequestBody CreateForm form) {
+        int newId = Customer.size()+1;
+        Customer.put(newId, form.getName());
+
+        URI url = UriComponentsBuilder.fromUriString("http://localhost:8080")
+                .path("/post2/" + newId)
+                .build()
+                .toUri();
+        return ResponseEntity.created(url).body("name successfully created");
     }
 }
