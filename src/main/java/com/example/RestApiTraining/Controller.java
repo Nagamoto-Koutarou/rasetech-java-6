@@ -1,5 +1,6 @@
 package com.example.RestApiTraining;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,5 +43,18 @@ public class Controller {
                 .build()
                 .toUri();
         return ResponseEntity.created(url).body("name successfully created");
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<Map<String, String>> patch(@PathVariable("id") int patchId, @RequestBody PatchForm form) {
+        Customer.put(patchId, form.getName());
+
+        return ResponseEntity.ok(Map.of("message", "name successfully updated"));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") int deleteId) {
+        Customer.remove(deleteId);
+        return new ResponseEntity<>("name successfully created", HttpStatus.OK);
     }
 }
