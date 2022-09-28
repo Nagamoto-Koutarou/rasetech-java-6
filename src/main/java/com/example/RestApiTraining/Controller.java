@@ -1,5 +1,6 @@
 package com.example.RestApiTraining;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,7 +20,7 @@ public class Controller {
         put(5, "安藤");
     }};
 
-    @GetMapping("/get")
+    @GetMapping("/customers")
     public Map<Integer, String> getName() {
 
         return Customer;
@@ -32,15 +33,29 @@ public class Controller {
         return Customer;
     }
 
-    @PostMapping("/post2")
-    public ResponseEntity<String> create(@RequestBody CreateForm form) {
+    @PostMapping("/customer")
+    public ResponseEntity<Map<String, String>> create(@RequestBody CreateForm form) {
         int newId = Customer.size()+1;
         Customer.put(newId, form.getName());
 
-        URI url = UriComponentsBuilder.fromUriString("http://localhost:8080")
+        String templates = "http://lacalhost:8080";
+        URI url = UriComponentsBuilder.fromUriString(templates)
                 .path("/post2/" + newId)
                 .build()
                 .toUri();
-        return ResponseEntity.created(url).body("name successfully created");
+        return ResponseEntity.created(url).body(Map.of("massage","name successfully created"));
+    }
+
+    @PatchMapping("/customer/{id}")
+    public ResponseEntity<Map<String, String>> patch(@PathVariable("id") int patchId, @RequestBody UpdateForm form) {
+        Customer.put(patchId, form.getName());
+
+        return ResponseEntity.ok(Map.of("message", "name successfully updated"));
+    }
+
+    @DeleteMapping("/customer/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") int deleteId) {
+        Customer.remove(deleteId);
+        return new ResponseEntity<>("name successfully created", HttpStatus.OK);
     }
 }
