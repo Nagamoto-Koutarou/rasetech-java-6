@@ -1,7 +1,7 @@
 package com.example.RestApiTraining;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,36 +26,27 @@ public class Controller {
         return Customer;
     }
 
-    @PostMapping("/post")
-    public Map<Integer, String> postName(@RequestParam("post")String param1) {
-        Customer.put(Customer.size()+1, param1);
-
-        return Customer;
-    }
-
-    @PostMapping("/customer")
-    public ResponseEntity<Map<String, String>> create(@RequestBody CreateForm form) {
+    @PostMapping("/customers")
+    public ResponseEntity<Map<String, String>> create(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
         int newId = Customer.size()+1;
         Customer.put(newId, form.getName());
 
-        String templates = "http://lacalhost:8080";
-        URI url = UriComponentsBuilder.fromUriString(templates)
-                .path("/post2/" + newId)
+        URI url = uriComponentsBuilder.path("/customers" + newId)
                 .build()
                 .toUri();
         return ResponseEntity.created(url).body(Map.of("massage","name successfully created"));
     }
 
-    @PatchMapping("/customer/{id}")
-    public ResponseEntity<Map<String, String>> patch(@PathVariable("id") int patchId, @RequestBody UpdateForm form) {
-        Customer.put(patchId, form.getName());
+    @PatchMapping("/customers/{id}")
+    public ResponseEntity<Map<String, String>> patch(@PathVariable("id") int customersId, @RequestBody UpdateForm form) {
+        Customer.put(customersId, form.getName());
 
         return ResponseEntity.ok(Map.of("message", "name successfully updated"));
     }
 
-    @DeleteMapping("/customer/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") int deleteId) {
-        Customer.remove(deleteId);
-        return new ResponseEntity<>("name successfully created", HttpStatus.OK);
+    @DeleteMapping("/customers/{id}")
+    public ResponseEntity<Map<String, String>> delete(@PathVariable("id") int customersId) {
+        Customer.remove(customersId);
+        return ResponseEntity.ok(Map.of("message", "name successfully created"));
     }
 }
